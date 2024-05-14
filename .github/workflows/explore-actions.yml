@@ -1,0 +1,65 @@
+name: GitHub Actions
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+on:
+    push:
+      branches:
+        - prod
+        - stage
+
+    pull_request:
+      branches:
+        - stage  # Only respond to PRs targeting the main branch
+jobs:
+    stage_action:
+        if: github.ref == 'refs/heads/stage'
+        runs-on: ubuntu-latest
+        steps:
+          - name: Check out code
+            uses: actions/checkout@v4
+          - name: Build main
+            run: echo "Building for main branch..."
+          - name: Test main
+            run: echo "Running tests for main branch..."
+          - name: Deploy to Production
+            run: echo "Deploying to production!"
+
+    run_test:
+      name: Run tests
+      if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/dev'
+      runs-on: ubuntu-latest
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v4
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v4
+          with:
+            node-version: '18'
+
+        - name: Install dependencies
+          run: npm install
+  
+        - name: Run Tests
+          run: npm test
+
+    add_patch_version:
+      name: Increment PATCH semver
+      if: github.ref == 'refs/heads/stage' && github.event_name == 'pull_request' && github.event.pull_request.merged == true
+      runs-on: ubuntu-latest
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v4
+        - name: Install dependencies
+          run: npm install
+        - name: Generate Release
+          uses: cycjimmy/semantic-release-action@v4
+          with:
+            branch: stage
+            extra_plugins: |
+              @semantic-release/changelog
+              @semantic-release/git
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+      
+    
