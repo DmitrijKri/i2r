@@ -11,15 +11,6 @@ on:
       branches:
         - stage  # Only respond to PRs targeting the stage branch
 jobs:
-    stage_action:
-        if: github.ref == 'refs/heads/stage'
-        runs-on: ubuntu-latest
-        steps:
-          - name: Check out code
-            uses: actions/checkout@v4
-          - name: Run echo
-            run: echo "Run echo on stage..."
-
     run_test:
       name: Run tests
       if: github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/dev'
