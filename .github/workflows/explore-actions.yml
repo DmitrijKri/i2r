@@ -5,10 +5,11 @@ on:
       branches:
         - prod
         - stage
+        - dev
 
     pull_request:
       branches:
-        - stage  # Only respond to PRs targeting the main branch
+        - stage  # Only respond to PRs targeting the stage branch
 jobs:
     stage_action:
         if: github.ref == 'refs/heads/stage'
@@ -16,12 +17,8 @@ jobs:
         steps:
           - name: Check out code
             uses: actions/checkout@v4
-          - name: Build main
-            run: echo "Building for main branch..."
-          - name: Test main
-            run: echo "Running tests for main branch..."
-          - name: Deploy to Production
-            run: echo "Deploying to production!"
+          - name: Run echo
+            run: echo "Run echo on stage..."
 
     run_test:
       name: Run tests
